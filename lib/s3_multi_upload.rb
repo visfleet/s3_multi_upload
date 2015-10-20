@@ -74,7 +74,7 @@ module S3_Multi_Upload
                   upload_parameters[:content_md5] = encoded_digest
                 end
 
-                upload.add_part upload_parameters
+                upload_part(upload, upload_parameters, offset, index)
 
                 if options[:progress_bar]
                   mutex.synchronize do
@@ -85,6 +85,21 @@ module S3_Multi_Upload
             end
           end
         end.each(&:join)
+      end
+    end
+
+    def upload_part(upload, upload_parameters, offset, index, retries = 0)
+      max_retries = 100
+      begin
+        upload.add_part upload_parameters
+      rescue => e
+        if retries < max_retries
+          retries += 1
+          puts "Caught exception while uploading part (offset: #{offset}, index: #{index}), retrying (#{retries}/#{max_retries}):\n\n#{e}"
+          upload_part(upload, upload_parameters, offset, index, retries)
+        else
+          raise e
+        end
       end
     end
 
