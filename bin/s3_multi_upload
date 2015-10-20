@@ -6,8 +6,8 @@ module S3_Multi_Upload
   class Task < Thor
 
     desc 'upload', 'upload a file to s3 in parallel'
-    method_option :access_key_id,     :required => true
-    method_option :secret_access_key, :required => true
+    method_option :access_key_id,     :required => false
+    method_option :secret_access_key, :required => false
     method_option :bucket,            :required => true
     method_option :file,              :required => true
     method_option :threads,           :required => true, :type => :numeric, :default => 5
@@ -16,6 +16,7 @@ module S3_Multi_Upload
     method_option :progress_bar,      :type => :boolean, :default => true
     method_option :checksum,          :type => :boolean, :default => true
     method_option :key,               :desc => 's3 object key (default: file name)'
+    method_option :server_side_encryption,            :type => :boolean, :default => false
 
     def upload
       Upload.new(options).process

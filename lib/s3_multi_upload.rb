@@ -11,6 +11,8 @@ module S3_Multi_Upload
       AWS.config :access_key_id     => options[:access_key_id],
                  :secret_access_key => options[:secret_access_key]
 
+      AWS.config(:s3_server_side_encryption => :aes256) if options[:server_side_encryption]
+
       @options = options
       @file    = Pathname.new options[:file]
       @queue   = Queue.new
